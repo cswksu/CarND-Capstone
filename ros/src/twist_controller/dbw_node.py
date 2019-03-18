@@ -57,6 +57,13 @@ class DBWNode(object):
         # self.controller = Controller(<Arguments you wish to provide>)
 
         # TODO: Subscribe to all the topics you need to
+        rospy.Subscriber('/current_velocity',TwistStamped,current_velocity_cb)
+        rospy.Subscriber('/twist_cmd',TwistStamped,twist_cmd_cb)
+        rospy.Subscriber('/vehicle/dbw_enabled',Bool,dbw_enabled_cb)
+
+        self.current_velocity=None
+        self.twist_cmd=None
+        self.dbw_enabled=None
 
         self.loop()
 
@@ -91,6 +98,15 @@ class DBWNode(object):
         bcmd.pedal_cmd_type = BrakeCmd.CMD_TORQUE
         bcmd.pedal_cmd = brake
         self.brake_pub.publish(bcmd)
+
+    def current_velocity_cb(self,msg):
+        self.current_velocity=msg
+
+    def twist_cmd_cb(self,msg):
+        self.twist_cmd=msg
+
+    def dbw_enabled_cb(self,msg):
+        self.dbw_enabled=msg
 
 
 if __name__ == '__main__':
