@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import numpy as np
 import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint, Int32
@@ -65,7 +66,7 @@ class WaypointUpdater(object):
         # Equation for hyperplane through closest_coords
         cl_vect = np.array(closest_coord)
         prev_vect = np.array(prev_coord)
-        pos_vect = np([x, y])
+        pos_vect = np.array([x, y])
 
         # Calculate dot product between cl_vect and previous vector
         # and position vector and closest vector
@@ -78,9 +79,11 @@ class WaypointUpdater(object):
             closest_idx = (closest_idx +1) % len(self.waypoints_2d)
         return closest_idx
 
-    def publish_waypoints(self):
-        # TODO: implement
-        pass
+    def publish_waypoints(self, closest_idx):
+        lane = Lane()
+        lane.header= self.base_waypoints.header
+        lane.waypoints=self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
+        self.final_waypoints_pub.publish(lane)
 
     def pose_cb(self, msg):
         self.pose = msg
