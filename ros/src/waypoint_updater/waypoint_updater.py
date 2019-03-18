@@ -56,29 +56,32 @@ class WaypointUpdater(object):
             rate.sleep()
 
     def get_closest_waypoint_idx(self):
-        x = self.pose.pose.position.x
-        y = self.pose.pose.position.y
-        closest_idx = self.waypoint_tree.query([x, y], 1)[1]
+        if self.waypoint_tree:
+            x = self.pose.pose.position.x
+            y = self.pose.pose.position.y
+            closest_idx = self.waypoint_tree.query([x, y], 1)[1]
 
-        # Check if closest waypoint is ahead of or behind the vehicle
-        closest_coord = self.waypoints_2d[closest_idx]
-        prev_coord = self.waypoints_2d[closest_idx-1]
+            # Check if closest waypoint is ahead of or behind the vehicle
+            closest_coord = self.waypoints_2d[closest_idx]
+            prev_coord = self.waypoints_2d[closest_idx-1]
 
-        # Equation for hyperplane through closest_coords
-        cl_vect = np.array(closest_coord)
-        prev_vect = np.array(prev_coord)
-        pos_vect = np.array([x, y])
+            # Equation for hyperplane through closest_coords
+            cl_vect = np.array(closest_coord)
+            prev_vect = np.array(prev_coord)
+            pos_vect = np.array([x, y])
 
-        # Calculate dot product between cl_vect and previous vector
-        # and position vector and closest vector
-        val = np.dot(cl_vect-prev_vect, pos_vect - cl_vect)
+            # Calculate dot product between cl_vect and previous vector
+            # and position vector and closest vector
+            val = np.dot(cl_vect-prev_vect, pos_vect - cl_vect)
 
-        # If val is > 0, then pos_vector is not between closest_coord
-        # and prev_coord
+            # If val is > 0, then pos_vector is not between closest_coord
+            # and prev_coord
 
-        if val > 0:
-            closest_idx = (closest_idx +1) % len(self.waypoints_2d)
-        return closest_idx
+            if val > 0:
+                closest_idx = (closest_idx +1) % len(self.waypoints_2d)
+            return closest_idx
+        else:
+            pass
 
     def publish_waypoints(self, closest_idx):
         lane = Lane()
