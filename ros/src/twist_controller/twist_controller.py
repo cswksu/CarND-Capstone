@@ -27,8 +27,9 @@ class Controller(object):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
         
-        if drive_by_wire_enabled:
+        #if !drive_by_wire_enabled:
             #set all integral terms to zero for PID controllers
+            
         
         steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
         
