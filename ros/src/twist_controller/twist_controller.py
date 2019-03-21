@@ -19,7 +19,7 @@ class Controller(object):
         #calculate vehicle mass with fuel
         vehicle_net_mass = vehicle_mass+fuel_capacity * GAS_DENSITY
 
-    def control(self, *args, **kwargs):
+    def control(self, current_velocity, proposed_linear_velocity, proposed_angular_velocity, drive_by_wire_enabled):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
         return 1., 0., 0.
