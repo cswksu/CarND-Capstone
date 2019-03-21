@@ -22,7 +22,7 @@ class Controller(object):
         self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
         #calculate vehicle mass with fuel
-        vehicle_net_mass = vehicle_mass+fuel_capacity * GAS_DENSITY
+        self.vehicle_net_mass = self.vehicle_mass+self.fuel_capacity * GAS_DENSITY
 
     def control(self, current_velocity, proposed_linear_velocity, proposed_angular_velocity, drive_by_wire_enabled):
         # TODO: Change the arg, kwarg list to suit your needs
