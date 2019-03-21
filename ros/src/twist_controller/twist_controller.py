@@ -30,8 +30,9 @@ class Controller(object):
         
         #if !drive_by_wire_enabled:
             #set all integral terms to zero for PID controllers
-            
+        steer = 0
         
-        steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
+        if proposed_linear_velocity and proposed_angular_velocity and current_velocity:
+            steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
         
         return 1., 0., steer
