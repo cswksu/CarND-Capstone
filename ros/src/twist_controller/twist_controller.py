@@ -18,7 +18,7 @@ class Controller(object):
         
         
         
-        self.steer_c=YawController(self.wheel_base, self.steer_ratio, 10.0, self.max_lat_accel, self.max_steer_angle)
+        self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
         #calculate vehicle mass with fuel
         vehicle_net_mass = vehicle_mass+fuel_capacity * GAS_DENSITY
