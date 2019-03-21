@@ -88,7 +88,7 @@ class DBWNode(object):
             #                                                     <any other argument you need>)
             # if <dbw is enabled>:
             #   self.publish(throttle, brake, steer)
-            self.throttle, self.brake, self.steering = self.controller.control(self.current_velocity, self.linear_vel, self.angular_vel, self.dbw_error)
+            self.throttle, self.brake, self.steering = self.controller.control(self.current_velocity, self.linear_vel, self.angular_vel, self.dbw_enabled)
             if self.dbw_enabled:
                 self.publish(self.throttle, self.brake, self.steer)
             else:
