@@ -18,6 +18,8 @@ class Controller(object):
         
         
         
+        self.steer_c=YawController(self.wheel_base, self.steer_ratio, 10.0, self.max_lat_accel, self.max_steer_angle)
+        
         #calculate vehicle mass with fuel
         vehicle_net_mass = vehicle_mass+fuel_capacity * GAS_DENSITY
 
@@ -25,4 +27,9 @@ class Controller(object):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
         
-        return 1., 0., 0.
+        if drive_by_wire_enabled:
+            #set all integral terms to zero for PID controllers
+        
+        steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
+        
+        return 1., 0., steer
