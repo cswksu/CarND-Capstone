@@ -3,6 +3,7 @@ GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
 
 from yaw_controller import YawController
+from pid import PID
 
 class Controller(object):
     def __init__(self, vehParams):
@@ -26,14 +27,22 @@ class Controller(object):
         
         self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
+        kp_throt=1
+        kd_throt=1
+        ki_throt=1
+        
+        self.throt_c= PID(kp_throt,kd_throt,ki_throt,mn=0.0, mx=1.0)
+        
+        
         
 
     def control(self, current_velocity, proposed_linear_velocity, proposed_angular_velocity, drive_by_wire_enabled):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
         
-        #if !drive_by_wire_enabled:
+        if !drive_by_wire_enabled:
             #set all integral terms to zero for PID controllers
+            self.throt_c.reset()
         steer = 0
         throt=0
         brake=0
