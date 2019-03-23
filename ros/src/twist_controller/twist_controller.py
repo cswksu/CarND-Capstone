@@ -16,13 +16,17 @@ class Controller(object):
         self.steer_ratio = vehParams[7]
         self.max_lat_accel = vehParams[8]
         self.max_steer_angle = vehParams[9]
+        #calculate vehicle mass with fuel
+        self.vehicle_net_mass = self.vehicle_mass+self.fuel_capacity * GAS_DENSITY
+        
+        self.min_brake_torque = 700 #N*m to prevent idle crawl
+        self.torque_inertia = self.vehicle_net_mass/self.wheel_radius
         
         
         
         self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
-        #calculate vehicle mass with fuel
-        self.vehicle_net_mass = self.vehicle_mass+self.fuel_capacity * GAS_DENSITY
+        
 
     def control(self, current_velocity, proposed_linear_velocity, proposed_angular_velocity, drive_by_wire_enabled):
         # TODO: Change the arg, kwarg list to suit your needs
