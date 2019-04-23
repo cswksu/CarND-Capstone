@@ -44,7 +44,7 @@ class Controller(object):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
         
-        if !drive_by_wire_enabled:
+        if not drive_by_wire_enabled:
             #set all integral terms to zero for PID controllers
             self.throt_c.reset()
         steer = 0
