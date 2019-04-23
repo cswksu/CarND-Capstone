@@ -250,10 +250,13 @@ class TLDetector(object):
             light_wp = self.get_closest_waypoints(stop_line_positions[light][0],stop_line_positions[light][1])
 
         #TODO find the closest visible traffic light (if one exists)
-        
+        debugFlag=true
 
         if light:
-            state = self.get_light_state(light)
+            if debugFlag:
+                state = self.lights[light].state
+            else:
+                state = self.get_light_state(light)
             return light_wp, state
         self.waypoints = None
         return -1, TrafficLight.UNKNOWN
