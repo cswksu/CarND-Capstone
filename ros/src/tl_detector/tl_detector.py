@@ -70,7 +70,7 @@ class TLDetector(object):
     def traffic_cb(self, msg):
         self.lights = msg.lights
         if not self.tl_2d:
-            self.tl_2d = [[tl.pose.pose.position.x, tl.pose.pose.position.y] for tl in msg]
+            self.tl_2d = [[tl.pose.pose.position.x, tl.pose.pose.position.y] for tl in msg.lights]
             self.tl_tree = KDTree(self.tl_2d)
 
     def image_cb(self, msg):
