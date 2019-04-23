@@ -51,6 +51,9 @@ class TLDetector(object):
         
         self.waypoints_2d = None
         self.waypoint_tree = None
+        
+        self.tl_2d = None
+        self.tl_tree = None
 
         rospy.spin()
 
@@ -60,11 +63,14 @@ class TLDetector(object):
     def waypoints_cb(self, waypoints):
         self.waypoints = waypoints
         if not self.waypoints_2d:
-            self.waypoint_tree = KDTree(self.waypoints)
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
-
+            self.waypoint_tree = KDTree(self.waypoints_2d)
+            
     def traffic_cb(self, msg):
         self.lights = msg.lights
+        if not self.tl_2d:
+            self.tl_2d = [[tl.pose.pose.position.x, tl.pose.pose.position.y] for tl in msg]
+            self.tl_tree = KDTree(self.tl_2d)
 
     def image_cb(self, msg):
         """Identifies red lights in the incoming camera image and publishes the index
@@ -170,6 +176,7 @@ class TLDetector(object):
             car_position = self.get_closest_waypoint(self.pose.pose)
 
         #TODO find the closest visible traffic light (if one exists)
+        
 
         if light:
             state = self.get_light_state(light)
