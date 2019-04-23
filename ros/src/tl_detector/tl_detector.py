@@ -48,6 +48,9 @@ class TLDetector(object):
         self.last_state = TrafficLight.UNKNOWN
         self.last_wp = -1
         self.state_count = 0
+        
+        self.waypoints_2d = None
+        self.waypoint_tree = None
 
         rospy.spin()
 
@@ -56,6 +59,9 @@ class TLDetector(object):
 
     def waypoints_cb(self, waypoints):
         self.waypoints = waypoints
+        if not self.waypoints_2d:
+            self.waypoint_tree = KDTree(self.waypoints)
+            self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
 
     def traffic_cb(self, msg):
         self.lights = msg.lights
@@ -101,7 +107,32 @@ class TLDetector(object):
 
         """
         #TODO implement
-        return 0
+        if self.waypoint_tree:
+            x = self.pose.pose.position.x
+            y = self.pose.pose.position.y
+            closest_idx = self.waypoint_tree.query([x, y], 1)[1]
+
+            # Check if closest waypoint is ahead of or behind the vehicle
+            closest_coord = self.waypoints_2d[closest_idx]
+            prev_coord = self.waypoints_2d[closest_idx-1]
+
+            # Equation for hyperplane through closest_coords
+            cl_vect = np.array(closest_coord)
+            prev_vect = np.array(prev_coord)
+            pos_vect = np.array([x, y])
+
+            # Calculate dot product between cl_vect and previous vector
+            # and position vector and closest vector
+            val = np.dot(cl_vect-prev_vect, pos_vect - cl_vect)
+
+            # If val is > 0, then pos_vector is not between closest_coord
+            # and prev_coord
+
+            if val > 0:
+                closest_idx = (closest_idx +1) % len(self.waypoints_2d)
+            return closest_idx
+        else:
+            pass
 
     def get_light_state(self, light):
         """Determines the current color of the traffic light
