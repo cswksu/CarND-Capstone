@@ -21,17 +21,21 @@ class Controller(object):
         self.vehicle_net_mass = self.vehicle_mass+self.fuel_capacity * GAS_DENSITY
         
         self.min_brake_torque = 700 #N*m to prevent idle crawl
-        self.torque_inertia = self.vehicle_net_mass/self.wheel_radius
+        self.torque_inertia = self.vehicle_net_mass*self.wheel_radius
         
         
         
         self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
-        kp_throt=1
+        kp_throt=-1
         kd_throt=1
         ki_throt=1
+        kp_brake=1
+        kd_brake=1
+        ki_brake=1
         
         self.throt_c= PID(kp_throt,kd_throt,ki_throt,mn=0.0, mx=1.0)
+        self.brake_c= PID(kp_brake,kd_brake,ki_brake,mn=0.0, mx=9.81*self.torque_inertia)
         
         
         
@@ -49,5 +53,10 @@ class Controller(object):
         
         if proposed_linear_velocity and proposed_angular_velocity and current_velocity:
             steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
+            throt= self.throt_c.step(current_velocity-proposed_linear_velocity,.02)
+            brake= self.brake_c.step(current_velocity-proposed_linear_velocity,.02)
+            if (current_velocity<0.5) and (proposed_linear_velocity==0):
+                throt=0
+                brake=self.min_brake_torque
         
         return throt, brake, steer
