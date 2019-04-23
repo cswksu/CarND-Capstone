@@ -102,6 +102,41 @@ class TLDetector(object):
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
         self.state_count += 1
 
+        
+    def get_closest_tl(self, pose):
+        """Identifies closest traffic light ahead of pose
+        Args:
+            pose (Pose): position to match a waypoint to
+        Returns:
+            int: index of closest TL in self.tl_2d
+        """
+        if self.tl_tree:
+            x = self.pose.pose.position.x
+            y = self.pose.pose.position.y
+            closest_idx = self.tl_tree.query([x, y], 1)[1]
+            
+            # Check if closest waypoint is ahead of or behind the vehicle
+            closest_coord = self.tl_2d[closest_idx]
+            prev_coord = self.tl_2d[closest_idx-1]
+
+            # Equation for hyperplane through closest_coords
+            cl_vect = np.array(closest_coord)
+            prev_vect = np.array(prev_coord)
+            pos_vect = np.array([x, y])
+
+            # Calculate dot product between cl_vect and previous vector
+            # and position vector and closest vector
+            val = np.dot(cl_vect-prev_vect, pos_vect - cl_vect)
+
+            # If val is > 0, then pos_vector is not between closest_coord
+            # and prev_coord
+
+            if val > 0:
+                closest_idx = (closest_idx +1) % len(self.tl_2d)
+            return closest_idx
+        else:
+            pass
+    
     def get_closest_waypoint(self, pose):
         """Identifies the closest path waypoint to the given position
             https://en.wikipedia.org/wiki/Closest_pair_of_points_problem
@@ -117,7 +152,7 @@ class TLDetector(object):
             x = self.pose.pose.position.x
             y = self.pose.pose.position.y
             closest_idx = self.waypoint_tree.query([x, y], 1)[1]
-
+            """
             # Check if closest waypoint is ahead of or behind the vehicle
             closest_coord = self.waypoints_2d[closest_idx]
             prev_coord = self.waypoints_2d[closest_idx-1]
@@ -135,7 +170,43 @@ class TLDetector(object):
             # and prev_coord
 
             if val > 0:
-                closest_idx = (closest_idx +1) % len(self.waypoints_2d)
+                closest_idx = (closest_idx +1) % len(self.waypoints_2d)"""
+            return closest_idx
+        else:
+            pass
+        
+    def get_closest_waypoint(self, x, y):
+        """Identifies the closest path waypoint to the given position
+            https://en.wikipedia.org/wiki/Closest_pair_of_points_problem
+        Args:
+            pose (Pose): position to match a waypoint to
+
+        Returns:
+            int: index of the closest waypoint in self.waypoints
+
+        """
+        #TODO implement
+        if self.waypoint_tree:
+            closest_idx = self.waypoint_tree.query([x, y], 1)[1]
+            """
+            # Check if closest waypoint is ahead of or behind the vehicle
+            closest_coord = self.waypoints_2d[closest_idx]
+            prev_coord = self.waypoints_2d[closest_idx-1]
+
+            # Equation for hyperplane through closest_coords
+            cl_vect = np.array(closest_coord)
+            prev_vect = np.array(prev_coord)
+            pos_vect = np.array([x, y])
+
+            # Calculate dot product between cl_vect and previous vector
+            # and position vector and closest vector
+            val = np.dot(cl_vect-prev_vect, pos_vect - cl_vect)
+
+            # If val is > 0, then pos_vector is not between closest_coord
+            # and prev_coord
+
+            if val > 0:
+                closest_idx = (closest_idx +1) % len(self.waypoints_2d)"""
             return closest_idx
         else:
             pass
@@ -169,11 +240,14 @@ class TLDetector(object):
 
         """
         light = None
+        light_wp = None
 
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
         if(self.pose):
             car_position = self.get_closest_waypoint(self.pose.pose)
+            light = self.get_closest_tl(self.pose.pose)
+            light_wp = self.get_closest_waypoints(stop_line_positions[light][0],stop_line_positions[light][1])
 
         #TODO find the closest visible traffic light (if one exists)
         
