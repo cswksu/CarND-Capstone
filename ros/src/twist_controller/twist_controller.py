@@ -47,6 +47,7 @@ class Controller(object):
         if not drive_by_wire_enabled:
             #set all integral terms to zero for PID controllers
             self.throt_c.reset()
+            self.brake_c.reset()
         steer = 0
         throt=0
         brake=0
