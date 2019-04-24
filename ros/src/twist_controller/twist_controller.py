@@ -27,15 +27,11 @@ class Controller(object):
         
         self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
-        kp_throt=1
-        kd_throt=1
-        ki_throt=1
-        kp_brake=1
-        kd_brake=1
-        ki_brake=1
+        kp=1
+        kd=1
+        ki=1
         
-        self.throt_c= PID(kp_throt,kd_throt,ki_throt,mn=0.0, mx=1.0)
-        self.brake_c= PID(kp_brake,kd_brake,ki_brake,mn=0.0, mx=9.81*self.torque_inertia)
+        self.throt_c= PID(kp,kd,ki,mn=-1.0, mx=1.0)
         
         
         
@@ -47,16 +43,20 @@ class Controller(object):
         if not drive_by_wire_enabled:
             #set all integral terms to zero for PID controllers
             self.throt_c.reset()
-            self.brake_c.reset()
         steer = 0
         throt=0
         brake=0
         
         if proposed_linear_velocity and proposed_angular_velocity and current_velocity:
             steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
-            throt= self.throt_c.step(-current_velocity+proposed_linear_velocity,.02)
-            brake= self.brake_c.step(current_velocity-proposed_linear_velocity,.02)
-            if (current_velocity<0.5) and (proposed_linear_velocity==0):
+            throt_temp = self.throt_c.step(-current_velocity+proposed_linear_velocity,.02)
+            if throt_temp>0:
+                throt=throt_temp
+                brake=0
+            else:
+                brake=-throt_temp*-9.81*self.torque_inertia
+                throt=0
+            if (current_velocity<1) and (proposed_linear_velocity<0.1):
                 throt=0
                 brake=self.min_brake_torque
         
