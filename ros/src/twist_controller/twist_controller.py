@@ -56,7 +56,7 @@ class Controller(object):
                 throt=min(1,throt)
                 brake=0
             else:
-                brake=(-throt_temp+10*dragThrot)*-9.81*self.torque_inertia*/10
+                brake=(-throt_temp+10*dragThrot)*-9.81*self.torque_inertia/10
                 throt=0
             if (current_velocity<1) and (proposed_linear_velocity<0.1):
                 throt=0
