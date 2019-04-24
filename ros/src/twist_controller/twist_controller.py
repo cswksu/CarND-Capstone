@@ -31,7 +31,7 @@ class Controller(object):
         kd=1
         ki=1
         
-        self.throt_c= PID(kp,kd,ki,mn=-1.0, mx=1.0)
+        self.throt_c= PID(kp,kd,ki,mn=-10.0, mx=1.0)
         
         
         
@@ -53,8 +53,8 @@ class Controller(object):
             if throt_temp>0:
                 throt=throt_temp
                 brake=0
-            elif throt_temp < -self.brake_deadband:
-                brake=-throt_temp*-9.81*self.torque_inertia
+            elif throt_temp < -self.brake_deadband*10:
+                brake=(-throt_temp-10*self.brake_deadband)*-9.81*self.torque_inertia*/10*(10/9)
                 throt=0
             if (current_velocity<1) and (proposed_linear_velocity<0.1):
                 throt=0
