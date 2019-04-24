@@ -48,13 +48,15 @@ class Controller(object):
         brake=0
         
         if proposed_linear_velocity and proposed_angular_velocity and current_velocity:
+            dragThrot=-0.1*current_velocity/5.3
             steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
             throt_temp = self.throt_c.step(-current_velocity+proposed_linear_velocity,.02)
-            if throt_temp>0:
-                throt=throt_temp
+            if throt_temp>dragThrot:
+                throt=throt_temp-dragThrot
+                throt=min(1,throt)
                 brake=0
-            elif throt_temp < -self.brake_deadband*10:
-                brake=(-throt_temp-10*self.brake_deadband)*-9.81*self.torque_inertia*/10*(10/9)
+            else
+                brake=(-throt_temp+10*dragThrot)*-9.81*self.torque_inertia*/10
                 throt=0
             if (current_velocity<1) and (proposed_linear_velocity<0.1):
                 throt=0
