@@ -27,9 +27,9 @@ class Controller(object):
         
         self.steer_c=YawController(self.wheel_base, self.steer_ratio, 0.1, self.max_lat_accel, self.max_steer_angle)
         
-        kp=1
-        kd=1
-        ki=1
+        kp=2
+        kd=0.01
+        ki=0.1
         
         self.throt_c= PID(kp,kd,ki,mn=-10.0, mx=1.0)
         
