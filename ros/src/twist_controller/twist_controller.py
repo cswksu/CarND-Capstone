@@ -53,7 +53,7 @@ class Controller(object):
             if throt_temp>0:
                 throt=throt_temp
                 brake=0
-            else:
+            elif throt_temp < -self.brake_deadband
                 brake=-throt_temp*-9.81*self.torque_inertia
                 throt=0
             if (current_velocity<1) and (proposed_linear_velocity<0.1):
