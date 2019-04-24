@@ -41,6 +41,7 @@ class WaypointUpdater(object):
         # TODO: Add other member variables you need below
         self.pose = None
         self.base_waypoints = None
+        self.base_lane = None
         self.waypoints_2d = None
         self.waypoint_tree = None
         self.stopline_wp_idx = -1
@@ -93,7 +94,7 @@ class WaypointUpdater(object):
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        self.base_waypoints=waypoints
+        self.base_lane=waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
             self.waypoint_tree = KDTree(self.waypoints_2d)
