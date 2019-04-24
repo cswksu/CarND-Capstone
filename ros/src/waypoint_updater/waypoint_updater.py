@@ -54,7 +54,7 @@ class WaypointUpdater(object):
                 #Get closest waypoint
                 closest_waypoint_idx = self.get_closest_waypoint_idx()
                 if closest_waypoint_idx:
-                    self.publish_waypoints(closest_waypoint_idx)
+                    self.publish_waypoints()
             rate.sleep()
 
     def get_closest_waypoint_idx(self):
