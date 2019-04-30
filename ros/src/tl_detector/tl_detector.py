@@ -138,7 +138,7 @@ class TLDetector(object):
         else:
             pass
     
-    def get_closest_waypoint(self, pose):
+    def get_closest_waypoint(self, pose, y=None):
         """Identifies the closest path waypoint to the given position
             https://en.wikipedia.org/wiki/Closest_pair_of_points_problem
         Args:
@@ -150,8 +150,11 @@ class TLDetector(object):
         """
         #TODO implement
         if self.waypoint_tree:
-            x = self.pose.pose.position.x
-            y = self.pose.pose.position.y
+            if y is None:
+                x = self.pose.pose.position.x
+                y = self.pose.pose.position.y
+            else:
+                x=pose
             closest_idx = self.waypoint_tree.query([x, y], 1)[1]
             """
             # Check if closest waypoint is ahead of or behind the vehicle
@@ -176,41 +179,7 @@ class TLDetector(object):
         else:
             pass
         
-    def get_closest_waypoint(self, x, y):
-        """Identifies the closest path waypoint to the given position
-            https://en.wikipedia.org/wiki/Closest_pair_of_points_problem
-        Args:
-            pose (Pose): position to match a waypoint to
-
-        Returns:
-            int: index of the closest waypoint in self.waypoints
-
-        """
-        #TODO implement
-        if self.waypoint_tree:
-            closest_idx = self.waypoint_tree.query([x, y], 1)[1]
-            """
-            # Check if closest waypoint is ahead of or behind the vehicle
-            closest_coord = self.waypoints_2d[closest_idx]
-            prev_coord = self.waypoints_2d[closest_idx-1]
-
-            # Equation for hyperplane through closest_coords
-            cl_vect = np.array(closest_coord)
-            prev_vect = np.array(prev_coord)
-            pos_vect = np.array([x, y])
-
-            # Calculate dot product between cl_vect and previous vector
-            # and position vector and closest vector
-            val = np.dot(cl_vect-prev_vect, pos_vect - cl_vect)
-
-            # If val is > 0, then pos_vector is not between closest_coord
-            # and prev_coord
-
-            if val > 0:
-                closest_idx = (closest_idx +1) % len(self.waypoints_2d)"""
-            return closest_idx
-        else:
-            pass
+    
 
     def get_light_state(self, light):
         """Determines the current color of the traffic light
