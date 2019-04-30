@@ -86,7 +86,7 @@ class TLDetector(object):
         self.count=self.count+1
         self.has_image = True
         self.camera_image = msg
-        if self.count==3
+        if self.count==3:
             light_wp, state = self.process_traffic_lights()
 
             '''
