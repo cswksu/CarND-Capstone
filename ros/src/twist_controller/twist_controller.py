@@ -17,6 +17,7 @@ class Controller(object):
         self.steer_ratio = vehParams[7]
         self.max_lat_accel = vehParams[8]
         self.max_steer_angle = vehParams[9]
+        self.sample_rate = vehParams[10]
         #calculate vehicle mass with fuel
         self.vehicle_net_mass = self.vehicle_mass+self.fuel_capacity * GAS_DENSITY
         
@@ -50,7 +51,7 @@ class Controller(object):
         if proposed_linear_velocity and proposed_angular_velocity and current_velocity:
             dragThrot=-0.1*current_velocity/5.3
             steer = self.steer_c.get_steering(proposed_linear_velocity, proposed_angular_velocity, current_velocity)
-            throt_temp = self.throt_c.step(-current_velocity+proposed_linear_velocity,.02)
+            throt_temp = self.throt_c.step(-current_velocity+proposed_linear_velocity,1/self.sample_rate)
             if throt_temp>dragThrot:
                 throt=throt_temp-dragThrot
                 throt=min(1,throt)
