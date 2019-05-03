@@ -24,7 +24,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 100 # Number of waypoints we will publish. You can change this number
 
 
 class WaypointUpdater(object):
@@ -49,7 +49,7 @@ class WaypointUpdater(object):
         self.loop()
 
     def loop(self):
-        rate = rospy.Rate(50)
+        rate = rospy.Rate(30)
         while not rospy.is_shutdown():
             if self.pose and self.base_lane:
                 #Get closest waypoint
@@ -113,7 +113,7 @@ class WaypointUpdater(object):
 
     def set_waypoint_velocity(self, waypoints, waypoint, velocity):
         waypoints[waypoint].twist.twist.linear.x = velocity
-        
+
     def distance(self, waypoints, wp1, wp2):
         dist = 0
         dl = lambda a, b: math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2  + (a.z-b.z)**2)
@@ -121,31 +121,33 @@ class WaypointUpdater(object):
             dist += dl(waypoints[wp1].pose.pose.position, waypoints[i].pose.pose.position)
             wp1 = i
         return dist
-    
-    
-    
+
+
+
     def generate_lane(self):
         lane = Lane()
-        
+
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
-        
+
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
         else:
             lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
         return lane
-    
+
     def decelerate_waypoints(self, waypoints, closest_idx):
         temp = []
         MAX_DECEL=5.0
+        max_speed=25.0*0.44704
         for i, wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
             stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
             dist = self.distance(waypoints, i, stop_idx)
-            vel = math.sqrt(2 * MAX_DECEL * dist)
+            #vel = math.sqrt(2 * MAX_DECEL * dist)
+            vel = max_speed/(1.0+math.exp(-0.25*(dist-9.0)))-1.0
             if vel < 1.:
                 vel=0.
             p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
