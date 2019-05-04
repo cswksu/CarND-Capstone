@@ -86,7 +86,7 @@ class TLDetector(object):
         self.count=self.count+1
         self.has_image = True
         self.camera_image = msg
-        if self.count==2:
+        if self.count==1:
             light_wp, state = self.process_traffic_lights()
 
             '''
@@ -97,10 +97,14 @@ class TLDetector(object):
             '''
             if self.state != state:
                 self.state_count = 0
+                if (state == TrafficLight.RED) and (self.state == TrafficLight.YELLOW):
+                    self.state_count = 1
+                elif (state == TrafficLight.YELLOW) and (self.state == TrafficLight.GREEN):
+                    self.state_count = 1
                 self.state = state
             elif self.state_count >= STATE_COUNT_THRESHOLD:
                 self.last_state = self.state
-                light_wp = light_wp if state == TrafficLight.RED else -1
+                light_wp = light_wp if ((state == TrafficLight.RED) or (state == TrafficLight.YELLOW)) else -1
                 self.last_wp = light_wp
                 self.upcoming_red_light_pub.publish(Int32(light_wp))
             else:
@@ -218,7 +222,6 @@ class TLDetector(object):
         """
         light = None
         light_wp = None
-
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
         if(self.pose):
@@ -229,7 +232,7 @@ class TLDetector(object):
         #TODO find the closest visible traffic light (if one exists)
         debugFlag=True
 
-        if light:
+        if light and (abs(car_position-light_wp)<150):
             if debugFlag:
                 state = self.lights[light].state
             else:
