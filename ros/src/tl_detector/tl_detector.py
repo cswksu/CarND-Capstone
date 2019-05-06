@@ -103,6 +103,8 @@ class TLDetector(object):
                     self.state_count = 1
                 elif (state == TrafficLight.YELLOW) and (self.state == TrafficLight.GREEN):
                     self.state_count = 1
+                elif (state == TrafficLight.GREEN) and (self.state == TrafficLight.RED):
+                    self.state_count = 1
                 self.state = state
             elif self.state_count >= STATE_COUNT_THRESHOLD:
                 self.last_state = self.state
