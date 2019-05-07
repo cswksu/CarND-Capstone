@@ -234,29 +234,12 @@ class TLDetector(object):
             light_wp = self.get_closest_waypoint(stop_line_positions[light][0],stop_line_positions[light][1])
 
         #TODO find the closest visible traffic light (if one exists)
-        debugFlag=False
+        #debugFlag=False
 
         if light and (abs(car_position-light_wp)<150):
-            if debugFlag:
-                cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-                im=PIL_Image.fromarray(cv_image)
-                state = self.lights[light].state
-                title=str(rospy.get_rostime().nsecs)
-                title=title+"_"+str(state)
-                title=fPath+title+".png"
-                im.save(title,"PNG")
-            else:
-                state = self.get_light_state(light)
-                #actual_state=self.lights[light].state
-                #if (state != actual_state) and (state <>4):
-                #    cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-                #    im=PIL_Image.fromarray(cv_image)
-                #    title=str(rospy.get_rostime().nsecs)
-                #    title=title+"_"+str(actual_state)
-                #    title=fPath+title+".png"
-                #    im.save(title,"PNG")
-                if (abs(car_position-light_wp)>125) and state==1:
-                    state==0
+            state = self.get_light_state(light)
+            if (abs(car_position-light_wp)>125) and state==1:
+                state==0
             return light_wp, state
         self.waypoints = None
         return -1, TrafficLight.UNKNOWN
